@@ -31,9 +31,6 @@ recoveries_df['total'] = recoveries_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC
 deaths_df['total'] = deaths_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
 testing_df['total'] = testing_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
 
-provinces = ['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']
-provinces.append('total')
-
 def get_main_chart(province='total', confirmed_df=confirmed_df,
                     recoveries_df=recoveries_df, deaths_df=deaths_df):
 
@@ -77,53 +74,17 @@ def get_main_chart(province='total', confirmed_df=confirmed_df,
     for i in data:
         fig.add_trace(i)
 
-    return data
+    return data, layout
 
-def get_ratio_chart(province='total', confirmed_df=confirmed_df,
-                    recoveries_df=recoveries_df, deaths_df=deaths_df):
-
-    ratio_df = pd.merge(confirmed_df[['date', province]], recoveries_df[['date', province]], on='date')
-    ratio_df.columns = ['date', 'confirmed', 'recovered']
-
-    ratio_df['ratio'] = ratio_df['confirmed'] - ratio_df['recovered']
-
-    if province == 'total':
-        province_name = 'South Africa'
-    else:
-        province_name = province
-
-    layout = dict(title = "Confirmed cases excluding recoveries (" + str(province_name) + ")",
-            xaxis = dict(title = 'Date'),
-            yaxis = dict(title = 'Confirmed'))
-
-    data = go.Scatter(x=confirmed_df['date'], y=ratio_df['ratio'],
-                             fill='tozeroy',
-                             fillcolor = 'rgba(230,74,25,0.7)',
-                             mode='none',
-                             name='Contracted')
-
-    fig = go.Figure()
-
-    fig.update_layout(layout)
-
-    fig.add_trace(data)
-
-    return data
+provinces = ['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC']
+provinces.append('total')
 
 def get_all_main_charts():
 
-    main_charts = []
+    figures = []
 
     for prov in provinces:
-        main_charts.append(get_main_chart(prov))
+        data, layout = get_main_chart(prov)
+        figures.append(dict(data=data, layout=layout))
 
-    return main_charts
-
-def get_all_ratio_charts():
-
-    ratio_charts = []
-
-    for prov in provinces:
-        ratio_charts.append(get_ratio_chart(prov))
-
-    return ratio_charts
+    return figures

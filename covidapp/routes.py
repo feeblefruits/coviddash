@@ -4,15 +4,21 @@ import numpy as np
 import json, plotly
 import plotly.graph_objects as go
 from flask import render_template
-from wrangling_scripts.wrangle_data import get_main_chart
+from wrangling_scripts.wrangle_data import get_all_main_charts
 
 @app.route('/')
 @app.route('/index')
 
-def chart():
+def index():
 
-    data = get_main_chart('WC')
-    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    figures = get_all_main_charts()
+
+    # plot ids for the html id tag
+    ids = ['figure-{}'.format(i) for i, _ in enumerate(figures)]
+
+    # Convert the plotly figures to JSON for javascript in html template
+    figuresJSON = json.dumps(figures, cls=plotly.utils.PlotlyJSONEncoder)
 
     return render_template('index.html',
-                            graphJSON=graphJSON)
+                           ids=ids,
+                           figuresJSON=figuresJSON)
