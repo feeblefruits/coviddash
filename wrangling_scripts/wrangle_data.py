@@ -6,6 +6,8 @@ import pandas as pd
 
 import plotly.graph_objects as go
 
+# data is retrieved and coverted to pd dfs
+
 confirmed = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_confirmed.csv'
 recoveries = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_recoveries.csv'
 deaths = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_deaths.csv'
@@ -31,8 +33,18 @@ recoveries_df['total'] = recoveries_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC
 deaths_df['total'] = deaths_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
 testing_df['total'] = testing_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
 
+# chart functions defined to convert dfs
+
 def get_main_chart(province='total', confirmed_df=confirmed_df,
                     recoveries_df=recoveries_df, deaths_df=deaths_df):
+
+    '''
+    Creates data (namely figures) used for Plotly area charts given province name
+
+    INPUT: optional province column name in string format
+    OUTPUT: data in list form and layout dict
+
+    '''
 
     confirmed_df = confirmed_df[['date', province]]
     recoveries_df = recoveries_df[['date', province]]
@@ -79,6 +91,15 @@ def get_main_chart(province='total', confirmed_df=confirmed_df,
 def get_ratio_chart(province='total', confirmed_df=confirmed_df,
                     recoveries_df=recoveries_df, deaths_df=deaths_df):
 
+    '''
+    Creates data (namely figures) used for Plotly ratio area charts given province name
+
+    INPUT: optional province column name in string format
+    OUTPUT: data in list form and layout dict
+
+    '''
+
+
     ratio_df = pd.merge(confirmed_df[['date', province]], recoveries_df[['date', province]], on='date')
     ratio_df.columns = ['date', 'confirmed', 'recovered']
 
@@ -108,9 +129,16 @@ figures = []
 
 def get_slider_chart(confirmed_df=confirmed_df):
 
+    '''
+    Creates data (namely figures) used for Plotly slider chart
+
+    INPUT: optional province column name in string format
+    OUTPUT: figures list which includes data in list form and layout dict
+
+    '''
 
     layout = dict(title = "Confirmed COVID-19 related cases by province",
-                xaxis = dict(title = 'Date'),
+                xaxis = dict(title = 'Date', rangeslider=dict(visible=True)),
                 yaxis = dict(title = 'Confirmed'))
 
     data = []
@@ -176,6 +204,14 @@ def get_slider_chart(confirmed_df=confirmed_df):
 
 def get_all_main_charts():
 
+    '''
+    Returns list of Plotly area chart data and layout in list form
+
+    INPUT: None
+    OUTPUT: figures list consisting of dict(data=data, layout=layout)
+
+    '''
+
     for prov in provinces:
         data, layout = get_main_chart(prov)
         figures.append(dict(data=data, layout=layout))
@@ -183,6 +219,14 @@ def get_all_main_charts():
     return figures
 
 def get_all_ratio_charts():
+
+    '''
+    Returns list of Plotly area ratio chart data and layout in list form
+
+    INPUT: None
+    OUTPUT: figures list consisting of dict(data=data, layout=layout)
+
+    '''
 
     for prov in provinces:
         data, layout = get_ratio_chart(prov)
