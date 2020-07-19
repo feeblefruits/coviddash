@@ -35,9 +35,6 @@ Run local server
 
 Uncomment the line ```app.run(host='0.0.0.0', port=3001, debug=True)``` in covid.py and run ```pyton covid.py``` in shell
 
-```bash
-python worldbank.py
-```
 In your browser go to http://localhost:3001 to view site.
 
 ## Contributing

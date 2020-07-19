@@ -3,38 +3,49 @@
 
 import requests
 import pandas as pd
-
 import plotly.graph_objects as go
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+# define scheduler
+sched = BlockingScheduler()
 
 # data is retrieved and coverted to pd dfs
 
-confirmed = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_confirmed.csv'
-recoveries = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_recoveries.csv'
-deaths = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_deaths.csv'
-testing = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_testing.csv'
+@sched.scheduled_job('interval', hours=2)
+def get_data():
 
-confirmed_df = pd.read_csv(confirmed)
-recoveries_df = pd.read_csv(recoveries)
-deaths_df = pd.read_csv(deaths)
-testing_df = pd.read_csv(testing)
+    confirmed = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_confirmed.csv'
+    recoveries = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_recoveries.csv'
+    deaths = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_deaths.csv'
+    testing = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_testing.csv'
 
-confirmed_df['date'] = pd.to_datetime(confirmed_df['date'], dayfirst=True)
-recoveries_df['date'] = pd.to_datetime(recoveries_df['date'], dayfirst=True)
-deaths_df['date'] = pd.to_datetime(deaths_df['date'], dayfirst=True)
-testing_df['date'] = pd.to_datetime(testing_df['date'], dayfirst=True)
+    confirmed_df = pd.read_csv(confirmed)
+    recoveries_df = pd.read_csv(recoveries)
+    deaths_df = pd.read_csv(deaths)
+    testing_df = pd.read_csv(testing)
 
-confirmed_df = confirmed_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
-recoveries_df = recoveries_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
-deaths_df = deaths_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
-testing_df = testing_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
+    confirmed_df['date'] = pd.to_datetime(confirmed_df['date'], dayfirst=True)
+    recoveries_df['date'] = pd.to_datetime(recoveries_df['date'], dayfirst=True)
+    deaths_df['date'] = pd.to_datetime(deaths_df['date'], dayfirst=True)
+    testing_df['date'] = pd.to_datetime(testing_df['date'], dayfirst=True)
 
-confirmed_df['total'] = confirmed_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
-recoveries_df['total'] = recoveries_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
-deaths_df['total'] = deaths_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
-testing_df['total'] = testing_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
+    confirmed_df = confirmed_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
+    recoveries_df = recoveries_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
+    deaths_df = deaths_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
+    testing_df = testing_df[['date', 'EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']]
+
+    confirmed_df['total'] = confirmed_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
+    recoveries_df['total'] = recoveries_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
+    deaths_df['total'] = deaths_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
+    testing_df['total'] = testing_df[['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC', 'UNKNOWN']].sum(axis=1)
+
+    return confirmed_df, recoveries_df, deaths_df
+
+confirmed_df, recoveries_df, deaths_df = get_data()
 
 # chart functions defined to convert dfs
 
+@sched.scheduled_job('interval', hours=2)
 def get_main_chart(province='total', confirmed_df=confirmed_df,
                     recoveries_df=recoveries_df, deaths_df=deaths_df):
 
@@ -88,6 +99,7 @@ def get_main_chart(province='total', confirmed_df=confirmed_df,
 
     return data, layout
 
+@sched.scheduled_job('interval', hours=2)
 def get_ratio_chart(province='total', confirmed_df=confirmed_df,
                     recoveries_df=recoveries_df, deaths_df=deaths_df):
 
@@ -127,6 +139,7 @@ provinces.append('total')
 
 figures = []
 
+@sched.scheduled_job('interval', hours=2)
 def get_slider_chart(confirmed_df=confirmed_df):
 
     '''
@@ -202,6 +215,7 @@ def get_slider_chart(confirmed_df=confirmed_df):
 
     return figures
 
+@sched.scheduled_job('interval', hours=2)
 def get_all_main_charts():
 
     '''
@@ -218,6 +232,7 @@ def get_all_main_charts():
 
     return figures
 
+@sched.scheduled_job('interval', hours=2)
 def get_all_ratio_charts():
 
     '''
@@ -233,3 +248,5 @@ def get_all_ratio_charts():
         figures.append(dict(data=data, layout=layout))
 
     return figures
+
+sched.start()
