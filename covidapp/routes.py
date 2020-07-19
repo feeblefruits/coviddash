@@ -1,5 +1,4 @@
 from covidapp import app
-import random
 import json
 import plotly
 import plotly.graph_objects as go
