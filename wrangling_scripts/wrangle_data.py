@@ -76,15 +76,116 @@ def get_main_chart(province='total', confirmed_df=confirmed_df,
 
     return data, layout
 
+def get_ratio_chart(province='total', confirmed_df=confirmed_df,
+                    recoveries_df=recoveries_df, deaths_df=deaths_df):
+
+    ratio_df = pd.merge(confirmed_df[['date', province]], recoveries_df[['date', province]], on='date')
+    ratio_df.columns = ['date', 'confirmed', 'recovered']
+
+    ratio_df['ratio'] = ratio_df['confirmed'] - ratio_df['recovered']
+
+    if province == 'total':
+        province_name = 'South Africa'
+    else:
+        province_name = province
+
+    layout = dict(title = "Confirmed cases excluding recoveries (" + str(province_name) + ")",
+            xaxis = dict(title = 'Date'),
+            yaxis = dict(title = 'Confirmed'))
+
+    data = go.Scatter(x=ratio_df['date'], y=ratio_df['ratio'],
+                             fill='tozeroy',
+                             fillcolor = 'rgba(230,74,25,0.7)',
+                             mode='none',
+                             name='Contracted')
+
+    return [data], layout
+
 provinces = ['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC']
 provinces.append('total')
 
-def get_all_main_charts():
+figures = []
 
-    figures = []
+def get_slider_chart(confirmed_df=confirmed_df):
+
+
+    layout = dict(title = "Confirmed COVID-19 related cases by province",
+                xaxis = dict(title = 'Date'),
+                yaxis = dict(title = 'Confirmed'))
+
+    data = []
+
+
+    data.append(go.Scatter(x=confirmed_df['date'], y=confirmed_df['GP'],
+                             mode='lines',
+                             line = dict(color='#EF476F', width=2),
+                             name='GP'))
+
+    data.append(go.Scatter(x=recoveries_df['date'], y=recoveries_df['WC'],
+                             mode='lines',
+                             line = dict(color='#FFD166', width=2),
+                             name='WC'))
+
+    data.append(go.Scatter(x=deaths_df['date'], y=deaths_df['EC'],
+                             mode='lines',
+                             line = dict(color='#06D6A0', width=2),
+                             name='EC'))
+
+    data.append(go.Scatter(x=deaths_df['date'], y=deaths_df['FS'],
+                             mode='lines',
+                             line = dict(color='#118AB2', width=2),
+                             name='FS'))
+
+    data.append(go.Scatter(x=confirmed_df['date'], y=confirmed_df['KZN'],
+                             mode='lines',
+                             line = dict(color='#073B4C', width=2),
+                             name='KZN'))
+
+    data.append(go.Scatter(x=recoveries_df['date'], y=recoveries_df['LP'],
+                             mode='lines',
+                             line = dict(color='#3F84E5', width=2),
+                             name='LP'))
+
+    data.append(go.Scatter(x=deaths_df['date'], y=deaths_df['MP'],
+                             mode='lines',
+                             line = dict(color='#C17817', width=2),
+                             name='MP'))
+
+    data.append(go.Scatter(x=deaths_df['date'], y=deaths_df['NC'],
+                             mode='lines',
+                             line = dict(color='#3F784C', width=2),
+                             name='NC'))
+
+    data.append(go.Scatter(x=deaths_df['date'], y=deaths_df['NW'],
+                             mode='lines',
+                             line = dict(color='#F0E2E7', width=2),
+                             name='NW'))
+
+    fig = go.Figure()
+
+    fig.update_layout(layout)
+
+    fig.update_xaxes(rangeslider_visible=True)
+
+    for i in data:
+        fig.add_trace(i)
+
+    figures.append(dict(data=data, layout=layout))
+
+    return figures
+
+def get_all_main_charts():
 
     for prov in provinces:
         data, layout = get_main_chart(prov)
+        figures.append(dict(data=data, layout=layout))
+
+    return figures
+
+def get_all_ratio_charts():
+
+    for prov in provinces:
+        data, layout = get_ratio_chart(prov)
         figures.append(dict(data=data, layout=layout))
 
     return figures
