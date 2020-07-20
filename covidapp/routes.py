@@ -12,7 +12,7 @@ sched = BlockingScheduler()
 @app.route('/')
 @app.route('/index')
 
-@sched.scheduled_job('interval', hours=2)
+# @sched.scheduled_job('interval', hours=2)
 def index():
 
     '''
@@ -37,4 +37,4 @@ def index():
                            ids=ids,
                            figuresJSON=figuresJSON)
 
-sched.start()
+# sched.start()
