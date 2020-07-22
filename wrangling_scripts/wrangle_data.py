@@ -11,7 +11,7 @@ sched = BlockingScheduler()
 
 # data is retrieved and coverted to pd dfs
 
-# @sched.scheduled_job('interval', hours=2)
+@sched.scheduled_job('interval', hours=2)
 def get_data():
 
     confirmed = 'https://raw.githubusercontent.com/dsfsi/covid19za/master/data/covid19za_provincial_cumulative_timeline_confirmed.csv'
@@ -45,7 +45,7 @@ confirmed_df, recoveries_df, deaths_df = get_data()
 
 # chart functions defined to convert dfs
 
-# @sched.scheduled_job('interval', hours=2)
+@sched.scheduled_job('interval', hours=2)
 def get_main_chart(province='total', confirmed_df=confirmed_df,
                     recoveries_df=recoveries_df, deaths_df=deaths_df):
 
@@ -99,7 +99,7 @@ def get_main_chart(province='total', confirmed_df=confirmed_df,
 
     return data, layout
 
-# @sched.scheduled_job('interval', hours=2)
+@sched.scheduled_job('interval', hours=2)
 def get_ratio_chart(province='total', confirmed_df=confirmed_df,
                     recoveries_df=recoveries_df, deaths_df=deaths_df):
 
@@ -139,7 +139,7 @@ provinces.append('total')
 
 figures = []
 
-# @sched.scheduled_job('interval', hours=2)
+@sched.scheduled_job('interval', hours=2)
 def get_slider_chart(confirmed_df=confirmed_df):
 
     '''
@@ -215,7 +215,7 @@ def get_slider_chart(confirmed_df=confirmed_df):
 
     return figures
 
-# @sched.scheduled_job('interval', hours=2)
+@sched.scheduled_job('interval', hours=2)
 def get_all_main_charts():
 
     '''
@@ -232,7 +232,7 @@ def get_all_main_charts():
 
     return figures
 
-# @sched.scheduled_job('interval', hours=2)
+@sched.scheduled_job('interval', hours=2)
 def get_all_ratio_charts():
 
     '''
@@ -249,4 +249,4 @@ def get_all_ratio_charts():
 
     return figures
 
-# sched.start()
+sched.start()
