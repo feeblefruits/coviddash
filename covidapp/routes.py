@@ -4,15 +4,10 @@ import plotly
 import plotly.graph_objects as go
 from flask import render_template
 from wrangling_scripts.wrangle_data import get_all_main_charts, get_all_ratio_charts, get_slider_chart
-from apscheduler.schedulers.blocking import BlockingScheduler
-
-# define scheduler
-sched = BlockingScheduler()
 
 @app.route('/')
 @app.route('/index')
 
-# @sched.scheduled_job('interval', hours=2)
 def index():
 
     '''
@@ -36,5 +31,3 @@ def index():
     return render_template('index.html',
                            ids=ids,
                            figuresJSON=figuresJSON)
-
-# sched.start()
