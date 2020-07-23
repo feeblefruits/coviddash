@@ -2,7 +2,7 @@
 
 Data vis dashboard built using Flask, Bootstrap and Plotly. This project is part of Udacity's data science course introduction to web development.
 
-Following the instructions below will launch data vis dashboard or can be viewed here [pip](https://covid-dash-south-africa.herokuapp.com/)
+Following the instructions below will launch data vis dashboard or can be viewed [here](https://covid-dash-south-africa.herokuapp.com/).
 
 ## Requirements
 
