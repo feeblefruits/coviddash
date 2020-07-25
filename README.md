@@ -4,6 +4,8 @@ Data vis dashboard built using Flask, Bootstrap and Plotly. This project is part
 
 Following the instructions below will launch data vis dashboard or can be viewed [here](https://covid-dash-south-africa.herokuapp.com/).
 
+![Image of Dash Preview](covid-dash-pic.png)
+
 ## Requirements
 
 In terminal do to directory and use the package manager [pip](https://pip.pypa.io/en/stable/) to install requirements.
